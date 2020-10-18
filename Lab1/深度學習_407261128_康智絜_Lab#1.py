@@ -16,8 +16,10 @@ def pla(dataset, _epoch, learningRate):
 	while train(w, dataset) is not None:
 		x, y = train(w, dataset)
 		w += y * x * learningRate # w <- w + eta(yx)
+
+		# avoid linearly inseparable
 		if epoch > _epoch:
-			print ("epoch is > ", _epoch,", program has stopped to avoid from linearly inseparable")
+			print ("epoch is > ", _epoch)
 			break;
 		epoch += 1
 	return w, epoch
@@ -70,6 +72,7 @@ def main(_epoch, learningRate):
 	file_train = open('train.txt', 'r')
 	readData = file_train.readlines()
 	dataset = []
+	
 	# store data to dataset
 	for line in readData:
 		x1, x2, label = line.replace('\n', ' ').split(',')
@@ -84,6 +87,7 @@ def main(_epoch, learningRate):
 	file_test = open('test.txt', 'r')
 	readTest = file_test.readlines()
 	testset = []
+
 	# store data to testset (for predicate)
 	for line in readTest:
 		x1, x2 = line.replace('\n',' ').split(',')
