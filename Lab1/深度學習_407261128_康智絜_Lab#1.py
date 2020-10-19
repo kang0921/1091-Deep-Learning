@@ -11,7 +11,7 @@ def train(w, dataset):
 
 # learningRate -> Control w update adjustment range
 def pla(dataset, _epoch, learningRate):
-	w = np.zeros(3)
+	w = np.random.randn(3)
 	epoch = 1
 	while train(w, dataset) is not None:
 		x, y = train(w, dataset)
@@ -59,12 +59,15 @@ def draw(w, dataset, testResult):
 	y = (-w[0]-w[1]*x) / w[2]
 	plt.figure()
 	plt.plot(x, y)
+	plt.title('Perceptron Learning Algorithm')
 	plt.xlabel('x1')
 	plt.ylabel('x2')
-	plt.plot(px1, py1, 'ko')
-	plt.plot(px2, py2, 'rx')
-	plt.plot(px3, py3, 'bs')
-	plt.plot(px4, py4, 'gs')
+	l1 = plt.plot(px1, py1, 'ko', label = '+1')
+	l2 = plt.plot(px2, py2, 'rx', label = '-1')
+	l3 = plt.plot(px3, py3, 'bs', label = '+1')
+	l4 = plt.plot(px4, py4, 'gs', label = '-1')
+	plt.legend(bbox_to_anchor=(1.05, 1.0), loc='upper left')
+	plt.tight_layout()
 	plt.show()
 
 def main(_epoch, learningRate):
@@ -77,11 +80,10 @@ def main(_epoch, learningRate):
 	for line in readData:
 		x1, x2, label = line.replace('\n', ' ').split(',')
 		dataset.append( [ (1, int(x1), int(x2)), (int(label)) ] )
-
 	w, epoch = pla(dataset, _epoch, learningRate)
 
 	if epoch < _epoch :
-		print( 'w0 =' , w[0], ', w1 =', w[1],', w2 =' , w[2])
+		print( 'w0 =' , w[0], '\nw1 =', w[1],'\nw2 =' , w[2])
 
 	# test
 	file_test = open('test.txt', 'r')
@@ -93,6 +95,7 @@ def main(_epoch, learningRate):
 		x1, x2 = line.replace('\n',' ').split(',')
 		testset.append( [int(x1), int(x2)] )
 	testResult = test(w, testset)
+	print('\nPredicate result：')
 	for i in testResult:
 	 	print(i)
 
