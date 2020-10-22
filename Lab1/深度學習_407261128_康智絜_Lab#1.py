@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import random
 
 def train(w, dataset):
 	res = None
@@ -11,7 +12,8 @@ def train(w, dataset):
 
 # learningRate -> Control w update adjustment range
 def pla(dataset, _epoch, learningRate):
-	w = np.random.randn(3)
+	w = np.array( [np.random.uniform(-1, 1), np.random.uniform(-1, 1), np.random.uniform(-1, 1)])
+	print("Initial weight is ", w)
 	epoch = 1
 	while train(w, dataset) is not None:
 		x, y = train(w, dataset)
@@ -62,10 +64,10 @@ def draw(w, dataset, testResult):
 	plt.title('Perceptron Learning Algorithm')
 	plt.xlabel('x1')
 	plt.ylabel('x2')
-	l1 = plt.plot(px1, py1, 'ko', label = '+1')
-	l2 = plt.plot(px2, py2, 'rx', label = '-1')
-	l3 = plt.plot(px3, py3, 'bs', label = '+1')
-	l4 = plt.plot(px4, py4, 'gs', label = '-1')
+	l1 = plt.plot(px1, py1, 'ko', label = 'train +1')
+	l2 = plt.plot(px2, py2, 'rx', label = 'train -1')
+	l3 = plt.plot(px3, py3, 'bs', label = 'test +1')
+	l4 = plt.plot(px4, py4, 'gs', label = 'test -1')
 	plt.legend(bbox_to_anchor=(1.05, 1.0), loc='upper left')
 	plt.tight_layout()
 	plt.show()
@@ -83,7 +85,7 @@ def main(_epoch, learningRate):
 	w, epoch = pla(dataset, _epoch, learningRate)
 
 	if epoch < _epoch :
-		print( 'w0 =' , w[0], '\nw1 =', w[1],'\nw2 =' , w[2])
+		print( '\nw0 =' , w[0], '\nw1 =', w[1],'\nw2 =' , w[2])
 
 	# test
 	file_test = open('test.txt', 'r')
