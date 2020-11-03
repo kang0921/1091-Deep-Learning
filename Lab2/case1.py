@@ -1,7 +1,10 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import random
-import math
+import warnings
+
+#為了ignore warning
+warnings.filterwarnings("ignore", category = Warning )
 
 # x0, x1, x2, y
 data = np.array([
@@ -10,61 +13,76 @@ data = np.array([
 ((1, 1, 0), 0),
 ((1, 1, 1), 1)], dtype = object)
 
-def sigmoid(n):
-	return 1.0 / (1.0 + math.exp(-n))
-
 def init_weight():
-	w = np.array( [np.random.uniform(-1, 1), np.random.uniform(-1, 1), np.random.uniform(-1, 1)])
-	print("Initial weight is ", w)
+	w = np.random.uniform(-1.0, 1.0, 3)
+	print("\nInitial weight is [ %f, %f, %f]" % (w[0], w[1], w[2]))
 	return w
 
-def Logistic_Regression(data, epoch, eta, init):
-	w = init.copy()
-	for i in range(epoch):
+def sigmoid(n):
+	return 1.0 / (1.0 + np.exp(-n))
+
+def Cross_Entropy(y, y_Hat):
+	tmp = -( y * np.log( y_Hat ) + (1 - y ) * np.log( 1 - y_Hat ) ) 
+	return True if tmp >= 0.5 else False
+
+def Gradient_Descent(data, epoch, LearningRate, init):
+	w = init.copy() 
+	count = 0
+	error = True
+	while error is True and count <= epoch:
+		error = False
 		for x, y in data:
-			x = np.array(x) # [1, x1, x2]
-			w += eta * (y - sigmoid( w.T.dot(x) )) * x		# w <- w + eta(y-^y)x
+			if Cross_Entropy(y, sigmoid( w.T.dot(x))) :
+				x = np.array(x) # x = [1, x1, x2]
+				w += LearningRate * (y - sigmoid( w.T.dot(x) )) * x	# w <- w + LearningRate(y-^y)x
+				error = True
+		count += 1
+
+	print("\nThe maximum number of epoches is", count)
 	return w
 
 def draw(w, data, init):
-	px1 = []	# dataset >0
-	py1 = []
-	px2 = []	# dataset <0
-	py2 = []
+	train_x1 = []	# dataset > 0
+	train_y1 = []
+	train_x2 = []	# dataset < 0
+	train_y2 = []
 	for x, y in data :
 		if y == 1:
-			px1.append(x[1])
-			py1.append(x[2])
+			train_x1.append(x[1])
+			train_y1.append(x[2])
 		else:
-			px2.append(x[1])
-			py2.append(x[2])
+			train_x2.append(x[1])
+			train_y2.append(x[2])
 
-	size = max(max(px1), max(px2), max(py1), max(py2))
-	x = np.linspace(-size, size, 10)
-	y1 = (-w[0]-w[1]*x) / w[2]
-	y2 = (-init[0]-init[1]*x) / init[2]
+
+	size = max( max(train_x1), max(train_y1), 
+				max(train_x2), max(train_y2))
+	X = np.linspace(-size, size, 10)
+
+	train_Y = (-w[0]-w[1]*X) / w[2]
+	init_Y = (-init[0]-init[1]*X) / init[2]
 
 	plt.figure()
-	plt.plot(x, y1, label = 'Train')	#畫Train線
-	plt.plot(x, y2, label = 'Init', color = 'red', linestyle = '--')		#畫Init線
+	plt.plot(X, train_Y, label = 'Train', color = 'c')	#畫Train線
+	plt.plot(X, init_Y, label = 'Init', color = 'red', linestyle = '--')		#畫Init線
 
-	plt.title('Training and Testing Data', size = 20)	# 標題
+	plt.title('Case 1', size = 20)	# 標題
 
-	plt.xlabel('x1')	# x軸座標
-	plt.ylabel('x2')	# y軸座標
+	plt.xlabel('x1', size = 12, labelpad = 10)	# x軸
+	plt.ylabel('x2', size = 12, labelpad = 10, rotation = 'horizontal')	# y軸
 
-	l1 = plt.plot(px1, py1, 'ko', label = '1 (Training)')	# 畫點(y = 1)
-	l2 = plt.plot(px2, py2, 'rx', label = '0 (Training)')	# 畫點(y = 0)
+	plt.plot(train_x1, train_y1, 'ko', label = '1 (Training)')	# 畫點(y = 1)
+	plt.plot(train_x2, train_y2, 'rx', label = '0 (Training)')	# 畫點(y = 0)
 
-	plt.legend(bbox_to_anchor=(1.05, 1.0), loc='upper left')	#圖例
-	plt.tight_layout()
+	plt.legend( loc='best')	#圖例
 	plt.show()
 
-def main(epoch, eta):
+def main(epoch, LearningRate):
+	print("Learning Rate is", LearningRate)
 	init = init_weight()
-	w = Logistic_Regression(data, epoch, eta, init)
-	print( '\nw0 =' , w[0], '\nw1 =', w[1],'\nw2 =' , w[2])
+	w = Gradient_Descent(data, epoch, LearningRate, init)
+	print("\nNew weight is [ %f, %f, %f]" % (w[0], w[1], w[2]))
 	draw(w, data, init)
-
+	
 if __name__ == '__main__':
-	main(10000,0.2)
+	main(100000,0.2)

@@ -8,10 +8,21 @@ warnings.filterwarnings("ignore", category = Warning )
 
 # x0, x1, x2, y
 data = np.array([
-((1, 0, 0), 0),
-((1, 0, 1), 1),
-((1, 1, 0), 1),
-((1, 1, 1), 0)], dtype = object)
+((1, 170, 80), 1),
+((1,  90, 15), 0),
+((1, 130, 30), 0),
+((1, 165, 55), 1),
+((1, 150, 45), 1),
+((1, 120, 40), 0),
+((1, 110, 35), 0),
+((1, 180, 70), 1),
+((1, 175, 65), 1),
+((1, 160, 60), 1)] , dtype = object)
+
+predict_Data = np.array([
+(1, 170, 60),
+(1,  85, 15),
+(1, 145, 45)], dtype = object)
 
 def init_weight():
 	w = np.random.uniform(-1.0, 1.0, 3)
@@ -41,11 +52,26 @@ def Gradient_Descent(data, epoch, LearningRate, init):
 	print("\nThe maximum number of epoches is", count)
 	return w
 
-def draw(w, data, init):
+def predict(predict_Data, w):
+	predict_result = []
+	print("\nPredict testing example are")
+	cnt = 0
+	for i in predict_Data:
+		cnt += 1
+		label = 1 if sigmoid(w.T.dot(i)) >= 0.5 else 0
+		predict_result.append([(i[0], i[1], i[2]), label])
+		print('Case %d ： ( %d , %d , %d )' % ( cnt, i[1], i[2], label))
+	return predict_result
+
+def draw(w, data, init, predict_result):
 	train_x1 = []	# dataset > 0
 	train_y1 = []
 	train_x2 = []	# dataset < 0
 	train_y2 = []
+	test_x1 = []	# predict_result > 0
+	test_y1 = []
+	test_x2 = []	# predict_result < 0
+	test_y2 = []
 	for x, y in data :
 		if y == 1:
 			train_x1.append(x[1])
@@ -53,10 +79,18 @@ def draw(w, data, init):
 		else:
 			train_x2.append(x[1])
 			train_y2.append(x[2])
-
+	for x, y in predict_result :
+		if y == 1:
+			test_x1.append(x[1])
+			test_y1.append(x[2])
+		else:
+			test_x2.append(x[1])
+			test_y2.append(x[2])
 
 	size = max( max(train_x1), max(train_y1), 
-				max(train_x2), max(train_y2))
+				max(train_x2), max(train_y2), 
+				max(test_x1), max(test_y1), 
+				max(test_x2), max(test_y2))
 	X = np.linspace(-size, size, 10)
 
 	train_Y = (-w[0]-w[1]*X) / w[2]
@@ -66,13 +100,15 @@ def draw(w, data, init):
 	plt.plot(X, train_Y, label = 'Train', color = 'c')	#畫Train線
 	plt.plot(X, init_Y, label = 'Init', color = 'red', linestyle = '--')		#畫Init線
 
-	plt.title('Case 3', size = 20)	# 標題
+	plt.title('Training and Testing Data', size = 20)	# 標題
 
 	plt.xlabel('x1', size = 12, labelpad = 10)	# x軸
 	plt.ylabel('x2', size = 12, labelpad = 10, rotation = 'horizontal')	# y軸
 
 	plt.plot(train_x1, train_y1, 'ko', label = '1 (Training)')	# 畫點(y = 1)
 	plt.plot(train_x2, train_y2, 'rx', label = '0 (Training)')	# 畫點(y = 0)
+	plt.plot(test_x1, test_y1, 'b^', label = '1 (Testing)')	# 畫點(y = 1)
+	plt.plot(test_x2, test_y2, 'g^', label = '0 (Testing)')	# 畫點(y = 0)
 
 	plt.legend( loc='best')	#圖例
 	plt.show()
@@ -82,7 +118,8 @@ def main(epoch, LearningRate):
 	init = init_weight()
 	w = Gradient_Descent(data, epoch, LearningRate, init)
 	print("\nNew weight is [ %f, %f, %f]" % (w[0], w[1], w[2]))
-	draw(w, data, init)
+	predict_result = predict(predict_Data, w)
+	draw(w, data, init, predict_result)
 	
 if __name__ == '__main__':
-	main(100000,0.2)
+	main(100000,0.5)
