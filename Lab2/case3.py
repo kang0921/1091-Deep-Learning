@@ -22,21 +22,22 @@ def sigmoid(n):
 	return 1.0 / (1.0 + np.exp(-n))
 
 def Cross_Entropy(y, y_Hat):
-	tmp = -( y * np.log( y_Hat ) + (1 - y ) * np.log( 1 - y_Hat ) ) 
-	return True if tmp >= 0.5 else False
+	return -( y * np.log( y_Hat ) + (1 - y ) * np.log( 1 - y_Hat ) ) 
 
-def Gradient_Descent(data, epoch, LearningRate, init):
+def Gradient_Descent(data, epoch, LearningRate, init, Error):
 	w = init.copy() 
 	count = 0
-	error = True
-	while error is True and count <= epoch:
-		error = False
+	_error = 1
+	while count <= epoch:
+		if _error < Error:
+			break
+		_error = 0
 		for x, y in data:
-			if Cross_Entropy(y, sigmoid( w.T.dot(x))) :
-				x = np.array(x) # x = [1, x1, x2]
-				w += LearningRate * (y - sigmoid( w.T.dot(x) )) * x	# w <- w + LearningRate(y-^y)x
-				error = True
+			x = np.array(x) # x = [1, x1, x2]
+			w += LearningRate * (y - sigmoid( w.T.dot(x) )) * x	# w <- w + LearningRate(y-^y)x
+			_error += Cross_Entropy(y, sigmoid( w.T.dot(x)))
 		count += 1
+		_error /= len(data)
 
 	print("\nThe maximum number of epoches is", count)
 	return w
@@ -77,12 +78,13 @@ def draw(w, data, init):
 	plt.legend( loc='best')	#圖例
 	plt.show()
 
-def main(epoch, LearningRate):
+def main(epoch, LearningRate, Error):
 	print("Learning Rate is", LearningRate)
+	print("\nError limit is", Error)
 	init = init_weight()
-	w = Gradient_Descent(data, epoch, LearningRate, init)
+	w = Gradient_Descent(data, epoch, LearningRate, init, Error)
 	print("\nNew weight is [ %f, %f, %f]" % (w[0], w[1], w[2]))
 	draw(w, data, init)
 	
 if __name__ == '__main__':
-	main(100000,0.2)
+	main(100000, 0.3, 0.01)

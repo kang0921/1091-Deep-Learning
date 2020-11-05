@@ -33,21 +33,22 @@ def sigmoid(n):
 	return 1.0 / (1.0 + np.exp(-n))
 
 def Cross_Entropy(y, y_Hat):
-	tmp = -( y * np.log( y_Hat ) + (1 - y ) * np.log( 1 - y_Hat ) ) 
-	return True if tmp >= 0.5 else False
+	return -( y * np.log( y_Hat ) + (1 - y ) * np.log( 1 - y_Hat ) ) 
 
-def Gradient_Descent(data, epoch, LearningRate, init):
+def Gradient_Descent(data, epoch, LearningRate, init, Error):
 	w = init.copy() 
 	count = 0
-	error = True
-	while error is True and count <= epoch:
-		error = False
+	_error = 1
+	while count <= epoch:
+		if _error < Error:
+			break
+		_error = 0
 		for x, y in data:
-			if Cross_Entropy(y, sigmoid( w.T.dot(x))) :
-				x = np.array(x) # x = [1, x1, x2]
-				w += LearningRate * (y - sigmoid( w.T.dot(x) )) * x	# w <- w + LearningRate(y-^y)x
-				error = True
+			x = np.array(x) # x = [1, x1, x2]
+			w += LearningRate * (y - sigmoid( w.T.dot(x) )) * x	# w <- w + LearningRate(y-^y)x
+			_error += Cross_Entropy(y, sigmoid( w.T.dot(x)))
 		count += 1
+		_error /= len(data)
 
 	print("\nThe maximum number of epoches is", count)
 	return w
@@ -87,11 +88,7 @@ def draw(w, data, init, predict_result):
 			test_x2.append(x[1])
 			test_y2.append(x[2])
 
-	size = max( max(train_x1), max(train_y1), 
-				max(train_x2), max(train_y2), 
-				max(test_x1), max(test_y1), 
-				max(test_x2), max(test_y2))
-	X = np.linspace(-size, size, 10)
+	X = np.linspace(-10, 200, 10)
 
 	train_Y = (-w[0]-w[1]*X) / w[2]
 	init_Y = (-init[0]-init[1]*X) / init[2]
@@ -113,13 +110,14 @@ def draw(w, data, init, predict_result):
 	plt.legend( loc='best')	#圖例
 	plt.show()
 
-def main(epoch, LearningRate):
+def main(epoch, LearningRate, Error):
 	print("Learning Rate is", LearningRate)
+	print("\nError limit is", Error)
 	init = init_weight()
-	w = Gradient_Descent(data, epoch, LearningRate, init)
+	w = Gradient_Descent(data, epoch, LearningRate, init, Error)
 	print("\nNew weight is [ %f, %f, %f]" % (w[0], w[1], w[2]))
 	predict_result = predict(predict_Data, w)
 	draw(w, data, init, predict_result)
 	
 if __name__ == '__main__':
-	main(100000,0.5)
+	main(100000, 0.5, 0.01)
