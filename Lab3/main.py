@@ -2,18 +2,18 @@ import numpy as np
 import warnings
 warnings.filterwarnings("ignore", category=Warning)
 
-learningRate = 0.01				# 學習率
-tau = 0.1					# 容錯率
-epoch = 30					# 最大世代數
-num_InputX = 784				# 輸入層包含784個節點
-num_hidden_layer = 1				# 隱藏層的層數
-num_hidden_neuron = 30				# 隱藏層的神經元個數
-num_OutputY = 3					# 輸出層包含三個神經元, 辨識 0, 1, 2 三個數字
-num_train_img = 6000				# 要train的img的資料筆數
-num_validate = 2000				# 用來驗證的img的資料筆數
-num_test = 2000					# 無類別測試資料
-output_model = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]) 	# One-Hot Encoding
-fault_tolerance = np.array([[tau], [tau], [tau]]) 	# 容錯率
+learningRate = 0.01										# 學習率
+tau = 0.1											# 容錯率
+epoch = 30											# 最大世代數
+num_InputX = 784										# 輸入層包含784個節點
+num_hidden_layer = 1										# 隱藏層的層數
+num_hidden_neuron = 30										# 隱藏層的神經元個數
+num_OutputY = 3											# 輸出層包含三個神經元, 辨識 0, 1, 2 三個數字
+num_train_img = 6000										# 要train的img的資料筆數
+num_validate = 2000										# 用來驗證的img的資料筆數
+num_test = 2000											# 無類別測試資料
+output_model = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]) 			# One-Hot Encoding
+fault_tolerance = np.array([[tau], [tau], [tau]]) 						# 容錯率
 
 # Initialize all network weights/biases to small random numbers 
 # weight
@@ -70,7 +70,7 @@ def cross_entropy(y, a):
 
 #  計算訓練資料的錯誤度量的平均值
 def average_cross_entropy(X, Y):
-	sum_cross_entropy = np.array( [0.0]*num_OutputY ).reshape(num_OutputY, 1)	# [ [0.0], [0.0], [0.0] ]
+	sum_cross_entropy = np.array( [0.0]*num_OutputY ).reshape(num_OutputY, 1)		# [ [0.0], [0.0], [0.0] ]
 	for i in range(num_train_img):
 		a1, a2 = Feedforward(X, i)
 		sum_cross_entropy += cross_entropy(output_model[ Y[i] ].reshape(num_OutputY, 1), a2)
