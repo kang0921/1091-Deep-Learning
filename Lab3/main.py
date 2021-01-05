@@ -143,7 +143,7 @@ def stochastic_backpropagation(X, Y):
 			Backward(a1, a2, X, Y, i, new_learningRate)				# Backward
 		now_epoch += 1									# 增加一個世代
 
-	print("停止於第 " + str(now_epoch) + " 世代數")					  # 印出停止於第幾個世代數
+	print("停止於第 " + str(now_epoch) + " 世代數")					  	# 印出停止於第幾個世代數
 
 
 
