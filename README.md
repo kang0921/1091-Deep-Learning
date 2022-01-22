@@ -1,7 +1,6 @@
 # 109級 深度學習
 - 系級：資工三甲
 - 教授：黃貞瑛 副教授
-
 - Lab1
   - 目的
     - (1)撰寫感知器學習演算法(Perceptron Learning Algorithm; PLA)
